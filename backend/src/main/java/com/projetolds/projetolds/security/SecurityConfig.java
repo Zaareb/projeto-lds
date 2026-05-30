@@ -20,15 +20,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(cors -> cors.configure(http))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.
-                        requestMatchers("/login").permitAll()
-                        .requestMatchers("/alunos").permitAll()
-                        .requestMatchers(
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/login", "/alunos").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         .requestMatchers("/funcionarios").hasRole("ADMIN")
 
@@ -36,8 +34,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/cursos", "/turmas", "/matriculas", "/alunos").hasAnyRole("ADMIN", "ATENDENTE")
                         .requestMatchers(HttpMethod.DELETE, "/cursos", "/turmas", "/matriculas", "/alunos").hasAnyRole("ADMIN", "ATENDENTE")
 
-                        .requestMatchers(HttpMethod.GET, "/cursos").hasAnyRole("ADMIN", "ATENDENTE", "PROFESSOR", "ALUNO")
-                        .requestMatchers(HttpMethod.GET, "/turmas").hasAnyRole("ADMIN", "ATENDENTE", "PROFESSOR", "ALUNO")
+                        .requestMatchers(HttpMethod.GET, "/cursos", "/turmas").authenticated()
+
+                        .requestMatchers("/mensagens", "/atendimentos").authenticated()
+
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
