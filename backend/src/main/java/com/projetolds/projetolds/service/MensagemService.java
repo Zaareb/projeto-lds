@@ -8,11 +8,13 @@ import com.projetolds.projetolds.repository.AlunoRepository;
 import com.projetolds.projetolds.repository.AtendimentoRepository;
 import com.projetolds.projetolds.repository.FuncionarioRepository;
 import com.projetolds.projetolds.repository.MensagemRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MensagemService {
@@ -53,5 +55,12 @@ public class MensagemService {
         }
 
         return mensagemRepository.save(mensagem);
+    }
+
+    public List<Mensagem> listarHistoricoDeMensagens(Long numero_protocolo) {
+        Atendimento atendimento = atendimentoRepository.findById(numero_protocolo)
+                .orElseThrow(() -> new EntityNotFoundException("Protocolo não encontrado."));
+
+        return mensagemRepository.findByAtendimento(atendimento);
     }
 }
