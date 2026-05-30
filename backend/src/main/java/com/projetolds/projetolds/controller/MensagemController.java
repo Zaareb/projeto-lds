@@ -1,6 +1,7 @@
 package com.projetolds.projetolds.controller;
 
 import com.projetolds.projetolds.dto.mensagem.EnviarMensagemDTO;
+import com.projetolds.projetolds.model.Mensagem;
 import com.projetolds.projetolds.service.MensagemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class MensagemController {
     private MensagemService mensagemService;
 
     @PostMapping
-    public ResponseEntity<Void> enviarMensagens(@RequestBody @Valid EnviarMensagemDTO enviarMensagemDTO) {
-        mensagemService.enviarMensagem(enviarMensagemDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Mensagem> enviarMensagens(@RequestBody @Valid EnviarMensagemDTO enviarMensagemDTO) {
+        Mensagem mensagem = mensagemService.enviarMensagem(enviarMensagemDTO);
+        return ResponseEntity.ok(mensagem);
     }
 }
